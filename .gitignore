@@ -1,6 +1,23 @@
+# Built application files
+*.apk
+*.apks
+*.aab
+
+# Files for the Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+/build
+/captures
+.externalNativeBuild
+.cxx
+
+# JetBrains IDE / Android Studio
 *.iml
 .gradle
-/local.properties
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -8,8 +25,7 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Local configuration file (sdk path, etc.)
 local.properties
+/local.properties
