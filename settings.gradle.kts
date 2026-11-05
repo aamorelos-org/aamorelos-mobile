@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AAMorelosMobile"
+rootProject.name = "AAMorelos"
 include(":app")

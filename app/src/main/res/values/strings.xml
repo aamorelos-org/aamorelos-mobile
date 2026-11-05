@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">AAMorelosMobile</string>
+    <string name="app_name">AA Morelos</string>
+
+    <!-- Drawer -->
+    <string name="drawer_info">Información</string>
+    <string name="drawer_directorio">Directorio</string>
+    <string name="drawer_distritos">Distritos</string>
+    <string name="drawer_ubicacion">Ubicación</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_grupos">Grupos</string>
+    <string name="nav_eventos">Eventos</string>
 </resources>
