@@ -114,7 +114,7 @@ fun MainNavigation() {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.7f)
                                 )
                             }
                         } else {
@@ -128,10 +128,10 @@ fun MainNavigation() {
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                        actionIconContentColor = MaterialTheme.colorScheme.onBackground
+                        containerColor = androidx.compose.ui.graphics.Color(0xFF1D4E89),
+                        titleContentColor = androidx.compose.ui.graphics.Color.White,
+                        navigationIconContentColor = androidx.compose.ui.graphics.Color.White,
+                        actionIconContentColor = androidx.compose.ui.graphics.Color.White
                     ),
                     navigationIcon = {
                         if (isDetail) {
@@ -171,7 +171,10 @@ fun MainNavigation() {
             },
             bottomBar = {
                 if (!isDetail) {
-                    NavigationBar {
+                    NavigationBar(
+                        containerColor = androidx.compose.ui.graphics.Color(0xFF1D4E89),
+                        contentColor = androidx.compose.ui.graphics.Color.White
+                    ) {
                         Screen.entries.forEach { screen ->
                             NavigationBarItem(
                                 icon = {
@@ -183,6 +186,13 @@ fun MainNavigation() {
                                 label = {
                                     Text(text = screen.label)
                                 },
+                                colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                    selectedIconColor = androidx.compose.ui.graphics.Color.White,
+                                    selectedTextColor = androidx.compose.ui.graphics.Color.White,
+                                    unselectedIconColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.6f),
+                                    unselectedTextColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.6f),
+                                    indicatorColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.15f)
+                                ),
                                 selected = currentScreen == screen,
                                 onClick = {
                                     navController.navigate(screen.route) {
