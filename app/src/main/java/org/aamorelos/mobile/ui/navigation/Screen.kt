@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.People
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -16,7 +16,7 @@ enum class Screen(
     HOME("home", "Inicio", Icons.Default.Home),
     GRUPOS("grupos", "Grupos", Icons.Default.People),
     EVENTOS("eventos", "Eventos", Icons.Default.Event),
-    DISTRITOS("distritos", "Distritos", Icons.Default.Map),
+    INFORMACION("informacion", "Información", Icons.Default.Info),
     REFLEXIONES("reflexiones", "Reflexiones", Icons.Default.Description);
 
     companion object {
@@ -25,6 +25,8 @@ enum class Screen(
         const val ARG_REFLEXION_SLOGAN = "reflexionSlogan"
         const val ARG_EVENTO_ID = "eventoId"
         const val ARG_ESTADO_ID = "estadoId"
+        const val INFORMACION_ROUTE = "informacion"
+        const val DISTRITOS_ROUTE = "distritos"
         const val GRUPO_DETAIL_ROUTE = "grupo_detalle/{$ARG_GRUPO_ID}"
         const val DISTRITO_DETAIL_ROUTE = "distrito_detalle/{$ARG_DISTRITO_ID}"
         const val REFLEXION_DETAIL_ROUTE = "reflexion_detalle/{$ARG_REFLEXION_SLOGAN}"

@@ -38,6 +38,7 @@ import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import org.aamorelos.mobile.ui.navigation.Screen
 import org.aamorelos.mobile.ui.screens.EventosScreen
+import org.aamorelos.mobile.ui.screens.AboutScreen
 import org.aamorelos.mobile.ui.screens.EventoDetailScreen
 import org.aamorelos.mobile.ui.screens.GrupoDetailScreen
 import org.aamorelos.mobile.ui.screens.GruposScreen
@@ -79,6 +80,16 @@ fun MainNavigation() {
             DrawerContent(
                 onItemClick = {
                     scope.launch { drawerState.close() }
+                },
+                onInformacionClick = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.INFORMACION_ROUTE) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 },
                 onReflexionesClick = {
                     scope.launch { drawerState.close() }
@@ -258,7 +269,10 @@ fun MainNavigation() {
                         }
                     )
                 }
-                composable(Screen.DISTRITOS.route) {
+                composable(Screen.INFORMACION.route) {
+                    AboutScreen(modifier = Modifier.padding(padding))
+                }
+                composable(Screen.DISTRITOS_ROUTE) {
                     DistritosScreen(
                         modifier = Modifier.padding(padding),
                         onDistritoClick = { distritoId ->
@@ -315,6 +329,9 @@ fun MainNavigation() {
                         modifier = Modifier.padding(padding),
                         onBack = { navController.popBackStack() }
                     )
+                }
+                composable(Screen.INFORMACION_ROUTE) {
+                    AboutScreen(modifier = Modifier.padding(padding))
                 }
             }
         }

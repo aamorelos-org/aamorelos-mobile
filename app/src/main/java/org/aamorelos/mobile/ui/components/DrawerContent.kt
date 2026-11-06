@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DrawerContent(
     onItemClick: () -> Unit,
+    onInformacionClick: () -> Unit = {},
     onReflexionesClick: () -> Unit = {}
 ) {
     Column(
@@ -38,7 +39,7 @@ fun DrawerContent(
         DrawerItem(
             text = "Información",
             icon = Icons.Default.Info,
-            onClick = onItemClick
+            onClick = onInformacionClick
         )
 
         DrawerItem(
