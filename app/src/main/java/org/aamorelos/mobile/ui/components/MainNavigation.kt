@@ -3,6 +3,7 @@ package org.aamorelos.mobile.ui.components
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,15 +21,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import org.aamorelos.mobile.ui.navigation.Screen
 import org.aamorelos.mobile.ui.screens.EventosScreen
+import org.aamorelos.mobile.ui.screens.EventoDetailScreen
+import org.aamorelos.mobile.ui.screens.GrupoDetailScreen
 import org.aamorelos.mobile.ui.screens.GruposScreen
+import org.aamorelos.mobile.ui.screens.DistritoDetailScreen
+import org.aamorelos.mobile.ui.screens.DistritosScreen
 import org.aamorelos.mobile.ui.screens.HomeScreen
+import org.aamorelos.mobile.ui.screens.ReflexionesScreen
+import org.aamorelos.mobile.ui.screens.ReflexionDetailScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,16 +47,41 @@ fun MainNavigation() {
     val scope = rememberCoroutineScope()
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen: Screen = currentBackStackEntry?.destination?.route?.let { route ->
+    val currentRoute = currentBackStackEntry?.destination?.route
+    val isGrupoDetail = Screen.isGrupoDetailRoute(currentRoute)
+    val isDistritoDetail = Screen.isDistritoDetailRoute(currentRoute)
+    val isReflexionDetail = Screen.isReflexionDetailRoute(currentRoute)
+    val isEventoDetail = Screen.isEventoDetailRoute(currentRoute)
+    val isDetail = isGrupoDetail || isDistritoDetail || isReflexionDetail || isEventoDetail
+    val currentScreen: Screen = currentRoute?.let { route ->
         Screen.entries.firstOrNull { it.route == route }
     } ?: Screen.HOME
+    val topBarTitle = when {
+        isGrupoDetail -> "Detalle del grupo"
+        isDistritoDetail -> "Detalle del distrito"
+        isReflexionDetail -> "Detalle de la reflexión"
+        isEventoDetail -> "Detalle del evento"
+        else -> currentScreen.label
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContent(onItemClick = {
-                scope.launch { drawerState.close() }
-            })
+            DrawerContent(
+                onItemClick = {
+                    scope.launch { drawerState.close() }
+                },
+                onReflexionesClick = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.REFLEXIONES.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
     ) {
         Scaffold(
@@ -55,44 +89,58 @@ fun MainNavigation() {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = currentScreen.label)
+                        Text(text = topBarTitle)
+                    },
+                    navigationIcon = {
+                        if (isDetail) {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Volver"
+                                )
+                            }
+                        }
                     },
                     actions = {
-                        IconButton(
-                            onClick = { scope.launch { drawerState.open() } }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Abrir menú"
-                            )
+                        if (!isDetail) {
+                            IconButton(
+                                onClick = { scope.launch { drawerState.open() } }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "Abrir menú"
+                                )
+                            }
                         }
                     }
                 )
             },
             bottomBar = {
-                NavigationBar {
-                    Screen.entries.forEach { screen ->
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    imageVector = screen.icon,
-                                    contentDescription = screen.label
-                                )
-                            },
-                            label = {
-                                Text(text = screen.label)
-                            },
-                            selected = currentScreen == screen,
-                            onClick = {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                if (!isDetail) {
+                    NavigationBar {
+                        Screen.entries.forEach { screen ->
+                            NavigationBarItem(
+                                icon = {
+                                    Icon(
+                                        imageVector = screen.icon,
+                                        contentDescription = screen.label
+                                    )
+                                },
+                                label = {
+                                    Text(text = screen.label)
+                                },
+                                selected = currentScreen == screen,
+                                onClick = {
+                                    navController.navigate(screen.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
@@ -102,13 +150,107 @@ fun MainNavigation() {
                 startDestination = Screen.HOME.route
             ) {
                 composable(Screen.HOME.route) {
-                    HomeScreen(modifier = Modifier.padding(padding))
+                    HomeScreen(
+                        modifier = Modifier.padding(padding),
+                        onVerMasClick = {
+                            navController.navigate(Screen.EVENTOS.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        onEventoClick = { eventoId ->
+                            navController.navigate(Screen.eventoDetailRoute(eventoId))
+                        },
+                        onVerMasReflexionesClick = {
+                            navController.navigate(Screen.REFLEXIONES.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        onReflexionClick = { slogan ->
+                            navController.navigate(Screen.reflexionDetailRoute(slogan))
+                        }
+                    )
                 }
                 composable(Screen.GRUPOS.route) {
-                    GruposScreen(modifier = Modifier.padding(padding))
+                    GruposScreen(
+                        modifier = Modifier.padding(padding),
+                        onGrupoClick = { grupoId ->
+                            navController.navigate(Screen.grupoDetailRoute(grupoId))
+                        }
+                    )
                 }
                 composable(Screen.EVENTOS.route) {
-                    EventosScreen(modifier = Modifier.padding(padding))
+                    EventosScreen(
+                        modifier = Modifier.padding(padding),
+                        onEventoClick = { eventoId ->
+                            navController.navigate(Screen.eventoDetailRoute(eventoId))
+                        }
+                    )
+                }
+                composable(Screen.DISTRITOS.route) {
+                    DistritosScreen(
+                        modifier = Modifier.padding(padding),
+                        onDistritoClick = { distritoId ->
+                            navController.navigate(Screen.distritoDetailRoute(distritoId))
+                        }
+                    )
+                }
+                composable(
+                    route = "${Screen.GRUPO_DETAIL_ROUTE}?estadoId={${Screen.ARG_ESTADO_ID}}",
+                    arguments = listOf(
+                        navArgument(Screen.ARG_GRUPO_ID) { type = NavType.StringType },
+                        navArgument(Screen.ARG_ESTADO_ID) {
+                            type = NavType.StringType
+                            defaultValue = "17"
+                        }
+                    )
+                ) {
+                    GrupoDetailScreen(modifier = Modifier.padding(padding))
+                }
+                composable(
+                    route = Screen.DISTRITO_DETAIL_ROUTE,
+                    arguments = listOf(
+                        navArgument(Screen.ARG_DISTRITO_ID) { type = NavType.StringType }
+                    )
+                ) {
+                    DistritoDetailScreen(modifier = Modifier.padding(padding))
+                }
+                composable(Screen.REFLEXIONES.route) {
+                    ReflexionesScreen(
+                        modifier = Modifier.padding(padding),
+                        onReflexionClick = { slogan ->
+                            navController.navigate(Screen.reflexionDetailRoute(slogan))
+                        }
+                    )
+                }
+                composable(
+                    route = Screen.REFLEXION_DETAIL_ROUTE,
+                    arguments = listOf(
+                        navArgument(Screen.ARG_REFLEXION_SLOGAN) { type = NavType.StringType }
+                    )
+                ) {
+                    ReflexionDetailScreen(
+                        modifier = Modifier.padding(padding),
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(
+                    route = Screen.EVENTO_DETAIL_ROUTE,
+                    arguments = listOf(
+                        navArgument(Screen.ARG_EVENTO_ID) { type = NavType.IntType }
+                    )
+                ) {
+                    EventoDetailScreen(
+                        modifier = Modifier.padding(padding),
+                        onBack = { navController.popBackStack() }
+                    )
                 }
             }
         }

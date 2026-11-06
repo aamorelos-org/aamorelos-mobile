@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
@@ -19,7 +20,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DrawerContent(onItemClick: () -> Unit) {
+fun DrawerContent(
+    onItemClick: () -> Unit,
+    onReflexionesClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,6 +57,12 @@ fun DrawerContent(onItemClick: () -> Unit) {
             text = "Ubicación",
             icon = Icons.Default.LocationOn,
             onClick = onItemClick
+        )
+
+        DrawerItem(
+            text = "Reflexiones",
+            icon = Icons.Default.Description,
+            onClick = onReflexionesClick
         )
     }
 }
