@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -23,7 +22,9 @@ import androidx.compose.ui.unit.dp
 fun DrawerContent(
     onItemClick: () -> Unit,
     onInformacionClick: () -> Unit = {},
-    onReflexionesClick: () -> Unit = {}
+    onReflexionesClick: () -> Unit = {},
+    onDirectorioClick: () -> Unit = {},
+    onReflexionDiariaClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -44,8 +45,8 @@ fun DrawerContent(
 
         DrawerItem(
             text = "Directorio",
-            icon = Icons.Default.List,
-            onClick = onItemClick
+            icon = Icons.AutoMirrored.Filled.List,
+            onClick = onDirectorioClick
         )
 
         DrawerItem(
@@ -55,15 +56,15 @@ fun DrawerContent(
         )
 
         DrawerItem(
-            text = "Ubicación",
-            icon = Icons.Default.LocationOn,
-            onClick = onItemClick
-        )
-
-        DrawerItem(
             text = "Reflexiones",
             icon = Icons.Default.Description,
             onClick = onReflexionesClick
+        )
+
+        DrawerItem(
+            text = "Reflexión Diaria",
+            icon = Icons.Default.Description,
+            onClick = onReflexionDiariaClick
         )
     }
 }

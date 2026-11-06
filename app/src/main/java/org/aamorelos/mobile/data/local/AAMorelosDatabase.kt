@@ -14,7 +14,7 @@ class AAMorelosDatabase(context: Context) : SQLiteOpenHelper(
     context,
     "aamorelos",
     null,
-    6
+    8
 ) {
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
@@ -58,6 +58,8 @@ class AAMorelosDatabase(context: Context) : SQLiteOpenHelper(
         db.execSQL(CREATE_EVENTO_FRASES_SQL)
         db.execSQL(CREATE_EVENTO_ANIVERSARIO_SQL)
         db.execSQL(CREATE_EVENTO_ANIVERSARIO_DIAS_SQL)
+        db.execSQL(CREATE_DIRECTORIO_SQL)
+        db.execSQL(CREATE_REFLEXION_DIARIA_SQL)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -79,6 +81,12 @@ class AAMorelosDatabase(context: Context) : SQLiteOpenHelper(
             db.execSQL(CREATE_EVENTO_FRASES_SQL)
             db.execSQL(CREATE_EVENTO_ANIVERSARIO_SQL)
             db.execSQL(CREATE_EVENTO_ANIVERSARIO_DIAS_SQL)
+        }
+        if (oldVersion < 7) {
+            db.execSQL(CREATE_DIRECTORIO_SQL)
+        }
+        if (oldVersion < 8) {
+            db.execSQL(CREATE_REFLEXION_DIARIA_SQL)
         }
     }
 
@@ -410,6 +418,48 @@ class AAMorelosDatabase(context: Context) : SQLiteOpenHelper(
         }
     }
 
+    fun getReflexionDiaria(fecha: String, ts: Long): org.aamorelos.mobile.domain.model.ReflexionDiariaModel? {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            """
+            SELECT id, fecha, titulo, texto, cita, contenido
+            FROM reflexion_diaria
+            WHERE fecha = ? AND ultimaActualizacion > ?
+            """.trimIndent(),
+            arrayOf(fecha, ts.toString())
+        )
+        return try {
+            if (cursor.moveToFirst()) {
+                org.aamorelos.mobile.domain.model.ReflexionDiariaModel(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha")) ?: "",
+                    titulo = cursor.getString(cursor.getColumnIndexOrThrow("titulo")) ?: "",
+                    texto = cursor.getString(cursor.getColumnIndexOrThrow("texto"))?.takeIf { it.isNotBlank() },
+                    cita = cursor.getString(cursor.getColumnIndexOrThrow("cita"))?.takeIf { it.isNotBlank() },
+                    contenido = cursor.getString(cursor.getColumnIndexOrThrow("contenido"))?.takeIf { it.isNotBlank() }
+                )
+            } else {
+                null
+            }
+        } finally {
+            cursor.close()
+        }
+    }
+
+    fun saveReflexionDiaria(entity: ReflexionDiariaEntity) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("fecha", entity.fecha)
+            put("id", entity.id)
+            put("titulo", entity.titulo)
+            put("texto", entity.texto)
+            put("cita", entity.cita)
+            put("contenido", entity.contenido)
+            put("ultimaActualizacion", entity.ultimaActualizacion)
+        }
+        db.insertWithOnConflict("reflexion_diaria", null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
     fun getReflexionDetail(slogan: String, ts: Long): org.aamorelos.mobile.domain.model.ReflexionDetailModel? {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -522,6 +572,71 @@ class AAMorelosDatabase(context: Context) : SQLiteOpenHelper(
                     put("ultimaActualizacion", entity.ultimaActualizacion)
                 }
                 db.insertWithOnConflict("eventos", null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
+    fun getDirectorio(limit: Int, offset: Int): List<org.aamorelos.mobile.domain.model.DirectorioModel> {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            """
+            SELECT id, pagina, imagen, anio, mes
+            FROM directorio
+            ORDER BY position ASC
+            LIMIT ? OFFSET ?
+            """.trimIndent(),
+            arrayOf(limit.toString(), offset.toString())
+        )
+        val result = mutableListOf<org.aamorelos.mobile.domain.model.DirectorioModel>()
+        try {
+            var valid = cursor.moveToFirst()
+            while (valid) {
+                result.add(
+                    org.aamorelos.mobile.domain.model.DirectorioModel(
+                        id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        pagina = cursor.getInt(cursor.getColumnIndexOrThrow("pagina")),
+                        imagen = cursor.getString(cursor.getColumnIndexOrThrow("imagen"))?.takeIf { it.isNotBlank() },
+                        anio = cursor.getString(cursor.getColumnIndexOrThrow("anio")) ?: "",
+                        mes = cursor.getString(cursor.getColumnIndexOrThrow("mes")) ?: ""
+                    )
+                )
+                valid = cursor.moveToNext()
+            }
+        } finally {
+            cursor.close()
+        }
+        return result
+    }
+
+    fun getDirectorioCount(): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM directorio", null)
+        return try {
+            if (cursor.moveToFirst()) cursor.getInt(0) else 0
+        } finally {
+            cursor.close()
+        }
+    }
+
+    fun saveDirectorio(entities: List<DirectorioEntity>) {
+        if (entities.isEmpty()) return
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            entities.forEach { entity ->
+                val values = ContentValues().apply {
+                    put("id", entity.id)
+                    put("pagina", entity.pagina)
+                    put("imagen", entity.imagen)
+                    put("anio", entity.anio)
+                    put("mes", entity.mes)
+                    put("position", entity.position)
+                    put("ultimaActualizacion", entity.ultimaActualizacion)
+                }
+                db.insertWithOnConflict("directorio", null, values, SQLiteDatabase.CONFLICT_REPLACE)
             }
             db.setTransactionSuccessful()
         } finally {
@@ -759,6 +874,18 @@ class AAMorelosDatabase(context: Context) : SQLiteOpenHelper(
                 PRIMARY KEY (id)
             )
         """
+        private const val CREATE_REFLEXION_DIARIA_SQL = """
+            CREATE TABLE IF NOT EXISTS reflexion_diaria (
+                fecha TEXT NOT NULL,
+                id INTEGER NOT NULL,
+                titulo TEXT NOT NULL,
+                texto TEXT,
+                cita TEXT,
+                contenido TEXT,
+                ultimaActualizacion INTEGER NOT NULL,
+                PRIMARY KEY (fecha)
+            )
+        """
         private const val CREATE_REFLEXION_DETALLE_SQL = """
             CREATE TABLE IF NOT EXISTS reflexion_detalle (
                 slogan TEXT NOT NULL,
@@ -837,6 +964,18 @@ class AAMorelosDatabase(context: Context) : SQLiteOpenHelper(
                 numero TEXT NOT NULL,
                 esJuntaPublica INTEGER NOT NULL,
                 PRIMARY KEY (eventoId, position)
+            )
+        """
+        private const val CREATE_DIRECTORIO_SQL = """
+            CREATE TABLE IF NOT EXISTS directorio (
+                id INTEGER NOT NULL,
+                pagina INTEGER NOT NULL,
+                imagen TEXT,
+                anio TEXT NOT NULL,
+                mes TEXT NOT NULL,
+                position INTEGER NOT NULL,
+                ultimaActualizacion INTEGER NOT NULL,
+                PRIMARY KEY (id)
             )
         """
     }

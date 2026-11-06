@@ -87,17 +87,6 @@ class CachedGruposRepository @Inject constructor(
         ultimaActualizacion = System.currentTimeMillis()
     )
 
-    private fun GrupoEntity.toModel(): GrupoModel = GrupoModel(
-        id = id,
-        nombre = nombre,
-        distritoId = distritoId ?: "",
-        municipio = municipio,
-        vecinos = vecinos?.takeIf { it.isNotBlank() },
-        tipo = tipo,
-        genero = genero,
-        lengua = lengua
-    )
-
     companion object {
         private const val CACHE_TTL_MILLIS = 24 * 60 * 60 * 1000L // 24 horas
     }

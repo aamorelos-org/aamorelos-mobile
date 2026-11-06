@@ -26,6 +26,11 @@ interface AaMorelosApi {
         @Path("distritoId") distritoId: String
     ): DistritoDetailDto
 
+    @GET("reflexiones-diarias/")
+    suspend fun getReflexionDiaria(
+        @retrofit2.http.Query("fecha") fecha: String
+    ): ReflexionDiariaResponse
+
     @GET("reflexiones/")
     suspend fun getReflexiones(
         @retrofit2.http.Query("skip") skip: Int = 0,
@@ -36,6 +41,12 @@ interface AaMorelosApi {
     suspend fun getReflexionDetail(
         @Path("slogan") slogan: String
     ): ReflexionDetailResponse
+
+    @GET("directorio/")
+    suspend fun getDirectorio(
+        @retrofit2.http.Query("skip") skip: Int = 0,
+        @retrofit2.http.Query("limit") limit: Int = 20
+    ): DirectorioResponse
 
     @GET("eventos/")
     suspend fun getEventos(

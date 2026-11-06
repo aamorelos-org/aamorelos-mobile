@@ -11,6 +11,9 @@ import okhttp3.OkHttpClient
 import org.aamorelos.mobile.data.cache.EventosFileFetcher
 import org.aamorelos.mobile.data.cache.EventosFileKeyer
 import org.aamorelos.mobile.data.cache.EventosImagesCache
+import org.aamorelos.mobile.data.cache.DirectorioFileFetcher
+import org.aamorelos.mobile.data.cache.DirectorioFileKeyer
+import org.aamorelos.mobile.data.cache.DirectorioImagesCache
 import org.aamorelos.mobile.data.cache.ReflexionesFileFetcher
 import org.aamorelos.mobile.data.cache.ReflexionesFileKeyer
 import org.aamorelos.mobile.data.cache.ReflexionesImagesCache
@@ -22,9 +25,10 @@ class AAMorelosApp : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         // Crear las carpetas de caché al iniciar, así existen en
-        // files/reflexiones/ y files/eventos/ aunque todavía no se haya abierto la pantalla.
+        // files/reflexiones/, files/eventos/ y files/directorio/ aunque todavía no se haya abierto la pantalla.
         ReflexionesImagesCache.ensureDirectory(this)
         EventosImagesCache.ensureDirectory(this)
+        DirectorioImagesCache.ensureDirectory(this)
     }
 
     override fun newImageLoader(): ImageLoader {
@@ -39,6 +43,8 @@ class AAMorelosApp : Application(), ImageLoaderFactory {
                 add(ReflexionesFileKeyer())
                 add(EventosFileFetcher.Factory(this@AAMorelosApp, client))
                 add(EventosFileKeyer())
+                add(DirectorioFileFetcher.Factory(this@AAMorelosApp, client))
+                add(DirectorioFileKeyer())
             }
             .memoryCache {
                 MemoryCache.Builder(this)

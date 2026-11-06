@@ -16,8 +16,8 @@ enum class Screen(
     HOME("home", "Inicio", Icons.Default.Home),
     GRUPOS("grupos", "Grupos", Icons.Default.People),
     EVENTOS("eventos", "Eventos", Icons.Default.Event),
-    INFORMACION("informacion", "Información", Icons.Default.Info),
-    REFLEXIONES("reflexiones", "Reflexiones", Icons.Default.Description);
+    REFLEXION_DIARIA("reflexion-diaria", "Diaria", Icons.Default.Description),
+    INFORMACION("informacion", "Información", Icons.Default.Info);
 
     companion object {
         const val ARG_GRUPO_ID = "grupoId"
@@ -27,6 +27,9 @@ enum class Screen(
         const val ARG_ESTADO_ID = "estadoId"
         const val INFORMACION_ROUTE = "informacion"
         const val DISTRITOS_ROUTE = "distritos"
+        const val DIRECTORIO_ROUTE = "directorio"
+        const val REFLEXIONES_ROUTE = "reflexiones"
+        const val REFLEXION_DIARIA_ROUTE = "reflexion-diaria"
         const val GRUPO_DETAIL_ROUTE = "grupo_detalle/{$ARG_GRUPO_ID}"
         const val DISTRITO_DETAIL_ROUTE = "distrito_detalle/{$ARG_DISTRITO_ID}"
         const val REFLEXION_DETAIL_ROUTE = "reflexion_detalle/{$ARG_REFLEXION_SLOGAN}"

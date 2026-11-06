@@ -38,6 +38,7 @@ import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import org.aamorelos.mobile.ui.navigation.Screen
 import org.aamorelos.mobile.ui.screens.EventosScreen
+import org.aamorelos.mobile.ui.screens.DirectorioScreen
 import org.aamorelos.mobile.ui.screens.AboutScreen
 import org.aamorelos.mobile.ui.screens.EventoDetailScreen
 import org.aamorelos.mobile.ui.screens.GrupoDetailScreen
@@ -47,6 +48,7 @@ import org.aamorelos.mobile.ui.screens.DistritosScreen
 import org.aamorelos.mobile.ui.screens.HomeScreen
 import org.aamorelos.mobile.ui.screens.ReflexionesScreen
 import org.aamorelos.mobile.ui.screens.ReflexionDetailScreen
+import org.aamorelos.mobile.ui.screens.ReflexionDiariaScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +95,27 @@ fun MainNavigation() {
                 },
                 onReflexionesClick = {
                     scope.launch { drawerState.close() }
-                    navController.navigate(Screen.REFLEXIONES.route) {
+                    navController.navigate(Screen.REFLEXIONES_ROUTE) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onDirectorioClick = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.DIRECTORIO_ROUTE) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onReflexionDiariaClick = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.REFLEXION_DIARIA_ROUTE) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
@@ -240,7 +262,7 @@ fun MainNavigation() {
                             navController.navigate(Screen.eventoDetailRoute(eventoId))
                         },
                         onVerMasReflexionesClick = {
-                            navController.navigate(Screen.REFLEXIONES.route) {
+                            navController.navigate(Screen.REFLEXIONES_ROUTE) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
@@ -267,6 +289,11 @@ fun MainNavigation() {
                         onEventoClick = { eventoId ->
                             navController.navigate(Screen.eventoDetailRoute(eventoId))
                         }
+                    )
+                }
+                composable(Screen.DIRECTORIO_ROUTE) {
+                    DirectorioScreen(
+                        modifier = Modifier.padding(padding)
                     )
                 }
                 composable(Screen.INFORMACION.route) {
@@ -300,13 +327,16 @@ fun MainNavigation() {
                 ) {
                     DistritoDetailScreen(modifier = Modifier.padding(padding))
                 }
-                composable(Screen.REFLEXIONES.route) {
+                composable(Screen.REFLEXIONES_ROUTE) {
                     ReflexionesScreen(
                         modifier = Modifier.padding(padding),
                         onReflexionClick = { slogan ->
                             navController.navigate(Screen.reflexionDetailRoute(slogan))
                         }
                     )
+                }
+                composable(Screen.REFLEXION_DIARIA_ROUTE) {
+                    ReflexionDiariaScreen(modifier = Modifier.padding(padding))
                 }
                 composable(
                     route = Screen.REFLEXION_DETAIL_ROUTE,

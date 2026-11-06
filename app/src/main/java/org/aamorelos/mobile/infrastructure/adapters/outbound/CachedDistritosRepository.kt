@@ -84,15 +84,6 @@ class CachedDistritosRepository @Inject constructor(
         ultimaActualizacion = System.currentTimeMillis()
     )
 
-    private fun DistritoEntity.toModel(): DistritoModel = DistritoModel(
-        id = id,
-        nombre = nombre,
-        municipio = municipio,
-        vecinos = vecinos?.takeIf { it.isNotBlank() },
-        area = area,
-        areaId = areaId
-    )
-
     companion object {
         private const val CACHE_TTL_MILLIS = 24 * 60 * 60 * 1000L // 24 horas
     }

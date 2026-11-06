@@ -10,16 +10,20 @@ import org.aamorelos.mobile.domain.ports.DistritosRepositoryPort
 import org.aamorelos.mobile.domain.ports.DistritoDetailRepositoryPort
 import org.aamorelos.mobile.domain.ports.ReflexionesRepositoryPort
 import org.aamorelos.mobile.domain.ports.ReflexionDetailRepositoryPort
+import org.aamorelos.mobile.domain.ports.ReflexionDiariaRepositoryPort
 import org.aamorelos.mobile.domain.ports.EventosRepositoryPort
 import org.aamorelos.mobile.domain.ports.EventoDetailRepositoryPort
+import org.aamorelos.mobile.domain.ports.DirectorioRepositoryPort
 import org.aamorelos.mobile.infrastructure.adapters.outbound.CachedDistritosRepository
 import org.aamorelos.mobile.infrastructure.adapters.outbound.CachedGruposRepository
 import org.aamorelos.mobile.infrastructure.adapters.outbound.DistritoDetailRepositoryAdapter
 import org.aamorelos.mobile.infrastructure.adapters.outbound.GrupoDetailRepositoryAdapter
 import org.aamorelos.mobile.infrastructure.adapters.outbound.ReflexionesRepositoryAdapter
 import org.aamorelos.mobile.infrastructure.adapters.outbound.ReflexionDetailRepositoryAdapter
+import org.aamorelos.mobile.infrastructure.adapters.outbound.ReflexionDiariaRepositoryAdapter
 import org.aamorelos.mobile.infrastructure.adapters.outbound.EventosRepositoryAdapter
 import org.aamorelos.mobile.infrastructure.adapters.outbound.EventoDetailRepositoryAdapter
+import org.aamorelos.mobile.infrastructure.adapters.outbound.DirectorioRepositoryAdapter
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -62,6 +66,12 @@ abstract class RepositoryModule {
 
     @Binds
     @javax.inject.Singleton
+    abstract fun bindReflexionDiariaRepository(
+        adapter: ReflexionDiariaRepositoryAdapter
+    ): ReflexionDiariaRepositoryPort
+
+    @Binds
+    @javax.inject.Singleton
     abstract fun bindEventosRepository(
         adapter: EventosRepositoryAdapter
     ): EventosRepositoryPort
@@ -71,4 +81,10 @@ abstract class RepositoryModule {
     abstract fun bindEventoDetailRepository(
         adapter: EventoDetailRepositoryAdapter
     ): EventoDetailRepositoryPort
+
+    @Binds
+    @javax.inject.Singleton
+    abstract fun bindDirectorioRepository(
+        adapter: DirectorioRepositoryAdapter
+    ): DirectorioRepositoryPort
 }
