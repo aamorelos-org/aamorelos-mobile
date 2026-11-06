@@ -1,7 +1,11 @@
 package org.aamorelos.mobile.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,13 +28,16 @@ fun DrawerContent(
     onInformacionClick: () -> Unit = {},
     onReflexionesClick: () -> Unit = {},
     onDirectorioClick: () -> Unit = {},
-    onReflexionDiariaClick: () -> Unit = {}
+    onReflexionDiariaClick: () -> Unit = {},
+    onDistritosClick: () -> Unit = {}
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
+    Box(modifier = Modifier.fillMaxHeight()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(16.dp)
+        ) {
         Text(
             text = "AA Morelos",
             style = MaterialTheme.typography.headlineSmall,
@@ -52,7 +59,7 @@ fun DrawerContent(
         DrawerItem(
             text = "Distritos",
             icon = Icons.Default.Map,
-            onClick = onItemClick
+            onClick = onDistritosClick
         )
 
         DrawerItem(
@@ -66,6 +73,7 @@ fun DrawerContent(
             icon = Icons.Default.Description,
             onClick = onReflexionDiariaClick
         )
+        }
     }
 }
 

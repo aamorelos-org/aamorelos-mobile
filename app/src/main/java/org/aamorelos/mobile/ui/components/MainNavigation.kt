@@ -21,13 +21,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -76,58 +79,75 @@ fun MainNavigation() {
     }
     val context = LocalContext.current
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            DrawerContent(
-                onItemClick = {
-                    scope.launch { drawerState.close() }
-                },
-                onInformacionClick = {
-                    scope.launch { drawerState.close() }
-                    navController.navigate(Screen.INFORMACION_ROUTE) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+    // Drawer en el lado derecho: el ModalNavigationDrawer coloca el panel
+    // según el LayoutDirection, así que lo envolvemos en RTL y restauramos
+    // LTR dentro del contenido para no espejar el resto de la UI.
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    DrawerContent(
+                        onItemClick = {
+                            scope.launch { drawerState.close() }
+                        },
+                        onInformacionClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(Screen.INFORMACION_ROUTE) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        onReflexionesClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(Screen.REFLEXIONES_ROUTE) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        onDirectorioClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(Screen.DIRECTORIO_ROUTE) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        onReflexionDiariaClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(Screen.REFLEXION_DIARIA_ROUTE) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        onDistritosClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(Screen.DISTRITOS_ROUTE) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                onReflexionesClick = {
-                    scope.launch { drawerState.close() }
-                    navController.navigate(Screen.REFLEXIONES_ROUTE) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                onDirectorioClick = {
-                    scope.launch { drawerState.close() }
-                    navController.navigate(Screen.DIRECTORIO_ROUTE) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                onReflexionDiariaClick = {
-                    scope.launch { drawerState.close() }
-                    navController.navigate(Screen.REFLEXION_DIARIA_ROUTE) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    )
                 }
-            )
-        }
-    ) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            }
+        ) {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
             topBar = {
@@ -147,7 +167,7 @@ fun MainNavigation() {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.7f)
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                                 )
                             }
                         } else {
@@ -161,10 +181,10 @@ fun MainNavigation() {
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = androidx.compose.ui.graphics.Color(0xFF1D4E89),
-                        titleContentColor = androidx.compose.ui.graphics.Color.White,
-                        navigationIconContentColor = androidx.compose.ui.graphics.Color.White,
-                        actionIconContentColor = androidx.compose.ui.graphics.Color.White
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     navigationIcon = {
                         if (isDetail) {
@@ -205,8 +225,8 @@ fun MainNavigation() {
             bottomBar = {
                 if (!isDetail) {
                     NavigationBar(
-                        containerColor = androidx.compose.ui.graphics.Color(0xFF1D4E89),
-                        contentColor = androidx.compose.ui.graphics.Color.White
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
                     ) {
                         Screen.entries.forEach { screen ->
                             NavigationBarItem(
@@ -220,11 +240,11 @@ fun MainNavigation() {
                                     Text(text = screen.label)
                                 },
                                 colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                                    selectedIconColor = androidx.compose.ui.graphics.Color.White,
-                                    selectedTextColor = androidx.compose.ui.graphics.Color.White,
-                                    unselectedIconColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.6f),
-                                    unselectedTextColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.6f),
-                                    indicatorColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.15f)
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
                                 ),
                                 selected = currentScreen == screen,
                                 onClick = {
@@ -272,6 +292,15 @@ fun MainNavigation() {
                         },
                         onReflexionClick = { slogan ->
                             navController.navigate(Screen.reflexionDetailRoute(slogan))
+                        },
+                        onInfoClick = {
+                            navController.navigate(Screen.INFORMACION_ROUTE) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     )
                 }
@@ -364,6 +393,8 @@ fun MainNavigation() {
                     AboutScreen(modifier = Modifier.padding(padding))
                 }
             }
+            }
+        }
         }
     }
 }

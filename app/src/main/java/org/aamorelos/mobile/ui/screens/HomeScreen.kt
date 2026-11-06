@@ -31,6 +31,7 @@ import org.aamorelos.mobile.domain.model.EventoItemModel
 import org.aamorelos.mobile.domain.model.ReflexionModel
 import org.aamorelos.mobile.infrastructure.adapters.inbound.EventosViewModel
 import org.aamorelos.mobile.infrastructure.adapters.inbound.ReflexionesViewModel
+import org.aamorelos.mobile.ui.components.AaInfoCard
 import org.aamorelos.mobile.ui.components.EventoCard
 import org.aamorelos.mobile.ui.components.ReflexionCard
 
@@ -44,6 +45,7 @@ fun HomeScreen(
     onEventoClick: (Int) -> Unit = {},
     onVerMasReflexionesClick: () -> Unit = {},
     onReflexionClick: (String) -> Unit = {},
+    onInfoClick: () -> Unit = {},
     viewModel: EventosViewModel = hiltViewModel(),
     reflexionesViewModel: ReflexionesViewModel = hiltViewModel()
 ) {
@@ -60,6 +62,10 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
+        item(key = "aa_info") {
+            AaInfoCard(onClick = onInfoClick)
+        }
+
         // Sección modular: carrusel de eventos (primeros 5)
         item(key = "eventos") {
             EventosCarouselSection(
