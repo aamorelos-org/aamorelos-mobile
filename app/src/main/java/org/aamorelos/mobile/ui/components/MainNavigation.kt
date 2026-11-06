@@ -4,22 +4,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -61,8 +69,9 @@ fun MainNavigation() {
         isDistritoDetail -> "Detalle del distrito"
         isReflexionDetail -> "Detalle de la reflexión"
         isEventoDetail -> "Detalle del evento"
-        else -> currentScreen.label
+        else -> "Alcohólicos Anónimos"
     }
+    val context = LocalContext.current
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -86,11 +95,44 @@ fun MainNavigation() {
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground,
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = topBarTitle)
+                        if (!isDetail) {
+                            androidx.compose.foundation.layout.Column {
+                                Text(
+                                    text = "Alcohólicos Anónimos",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "6to Distrito - Área Morelos - 2026",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        } else {
+                            Text(
+                                text = topBarTitle,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                        actionIconContentColor = MaterialTheme.colorScheme.onBackground
+                    ),
                     navigationIcon = {
                         if (isDetail) {
                             IconButton(onClick = { navController.popBackStack() }) {
@@ -103,6 +145,18 @@ fun MainNavigation() {
                     },
                     actions = {
                         if (!isDetail) {
+                            IconButton(onClick = { openDial(context) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Phone,
+                                    contentDescription = "Llamar por teléfono"
+                                )
+                            }
+                            IconButton(onClick = { openEmail(context) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Email,
+                                    contentDescription = "Enviar correo"
+                                )
+                            }
                             IconButton(
                                 onClick = { scope.launch { drawerState.open() } }
                             ) {
