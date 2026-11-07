@@ -11,4 +11,9 @@
     <string name="nav_inicio">Inicio</string>
     <string name="nav_grupos">Grupos</string>
     <string name="nav_eventos">Eventos</string>
+
+    <!-- Notificaciones push (FCM) -->
+    <string name="notification_channel_name">Notificaciones AA Morelos</string>
+    <string name="notification_channel_description">Avisos de eventos y reflexiones</string>
+    <string name="notification_default_title">AA Morelos</string>
 </resources>

@@ -17,6 +17,7 @@ import org.aamorelos.mobile.data.cache.DirectorioImagesCache
 import org.aamorelos.mobile.data.cache.ReflexionesFileFetcher
 import org.aamorelos.mobile.data.cache.ReflexionesFileKeyer
 import org.aamorelos.mobile.data.cache.ReflexionesImagesCache
+import org.aamorelos.mobile.notifications.PushNotificationHelper
 import java.util.concurrent.TimeUnit
 
 @HiltAndroidApp
@@ -29,6 +30,8 @@ class AAMorelosApp : Application(), ImageLoaderFactory {
         ReflexionesImagesCache.ensureDirectory(this)
         EventosImagesCache.ensureDirectory(this)
         DirectorioImagesCache.ensureDirectory(this)
+        // Canal de notificaciones push (FCM) — debe existir antes del primer mensaje.
+        PushNotificationHelper.createChannel(this)
     }
 
     override fun newImageLoader(): ImageLoader {

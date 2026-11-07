@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
+import org.aamorelos.mobile.notifications.PushNotificationDestination
 import org.aamorelos.mobile.ui.navigation.Screen
 import org.aamorelos.mobile.ui.screens.EventosScreen
 import org.aamorelos.mobile.ui.screens.DirectorioScreen
@@ -55,10 +57,23 @@ import org.aamorelos.mobile.ui.screens.ReflexionDiariaScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainNavigation() {
+fun MainNavigation(
+    pendingDestination: PushNotificationDestination? = null,
+    onPendingDestinationConsumed: () -> Unit = {}
+) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // Notificación push tocada: navegar al detalle (evento o reflexión)
+    // y consumir el destino para no repetir la navegación.
+    LaunchedEffect(pendingDestination) {
+        val destination = pendingDestination ?: return@LaunchedEffect
+        navController.navigate(destination.route) {
+            launchSingleTop = true
+        }
+        onPendingDestinationConsumed()
+    }
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
